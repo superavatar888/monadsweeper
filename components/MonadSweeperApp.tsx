@@ -129,22 +129,24 @@ export default function MonadSweeperApp() {
   }
 
   return (
-    <div className="max-w-6xl w-full mx-auto p-10 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 rounded-3xl shadow-2xl space-y-8 border border-gray-200">
-      <header className="text-center space-y-4 pb-6 border-b-2 border-gray-200">
-        <h2 className="text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
+    <div className="max-w-7xl w-full mx-auto p-12 bg-gradient-to-br from-white via-blue-50/40 to-purple-50/40 rounded-3xl shadow-2xl space-y-10 border-4 border-blue-200">
+      <header className="text-center space-y-6 pb-8 border-b-4 border-blue-300">
+        <h2 className="text-7xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-lg">
           MONAD 空投归集工具
         </h2>
-        <p className="text-xl text-gray-700 max-w-3xl mx-auto font-medium">从多个空投钱包批量发送 MON 代币到交易所。</p>
+        <p className="text-2xl text-gray-700 max-w-4xl mx-auto font-semibold">
+          从多个空投钱包批量发送 MON 代币到交易所。
+        </p>
       </header>
 
-      <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-l-8 border-amber-500 text-amber-900 rounded-2xl flex items-center space-x-4 shadow-lg">
-        <AlertTriangle className="h-8 w-8 flex-shrink-0 text-amber-600" />
-        <p className="text-base font-bold">警告：本工具涉及私钥操作，请务必在**离线/安全环境**中使用！</p>
+      <div className="p-8 bg-gradient-to-r from-amber-50 to-orange-50 border-l-8 border-amber-500 text-amber-900 rounded-2xl flex items-center space-x-4 shadow-xl">
+        <AlertTriangle className="h-10 w-10 flex-shrink-0 text-amber-600" />
+        <p className="text-lg font-bold">警告：本工具涉及私钥操作，请务必在**离线/安全环境**中使用！</p>
       </div>
 
-      <div className="space-y-8">
-        <div className="space-y-4">
-          <label htmlFor="target-address" className="text-xl font-bold text-gray-900 block">
+      <div className="space-y-10">
+        <div className="space-y-5">
+          <label htmlFor="target-address" className="text-2xl font-bold text-gray-900 block">
             目标交易所地址 (归集地址):
           </label>
           <Input
@@ -153,35 +155,35 @@ export default function MonadSweeperApp() {
             value={targetAddress}
             onChange={(e) => setTargetAddress(e.target.value)}
             placeholder="0x..."
-            className="font-mono p-5 h-16 text-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-4 focus:ring-blue-200 rounded-2xl transition-all shadow-sm"
+            className="font-mono p-6 h-20 text-xl border-3 border-blue-300 focus:border-blue-600 focus:ring-4 focus:ring-blue-200 rounded-2xl transition-all shadow-md"
           />
         </div>
 
-        <div className="space-y-4">
-          <label htmlFor="private-keys" className="text-xl font-bold text-gray-900 block">
+        <div className="space-y-5">
+          <label htmlFor="private-keys" className="text-2xl font-bold text-gray-900 block">
             私钥列表 (每行一个):
           </label>
           <textarea
             id="private-keys"
             value={rawKeyInput}
             onChange={(e) => setRawKeyInput(e.target.value)}
-            rows={40}
-            className="w-full p-6 border-2 border-gray-300 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-600 text-base font-mono placeholder:text-gray-400 shadow-inner bg-white transition-all resize-y"
+            rows={45}
+            className="w-full p-8 border-3 border-blue-300 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-600 text-lg font-mono placeholder:text-gray-400 shadow-lg bg-white transition-all resize-y"
             placeholder="格式支持：&#10; 私钥 金额 (如: 0x... 0.05) &#10; 私钥,金额 (如: 0x...,0.05) &#10; 私钥=金额 (如: 0x...=0.05) &#10; 或仅填写私钥&#10;&#10;此输入框支持输入数千个私钥，可以自由调整高度..."
           />
         </div>
       </div>
 
-      <div className="space-y-6 border-t-2 border-gray-200 pt-8">
-        <h3 className="text-2xl font-bold text-gray-900">转账模式:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-8 border-t-4 border-blue-300 pt-10">
+        <h3 className="text-3xl font-bold text-gray-900">转账模式:</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Button
             variant={transferMode === "ALL" ? "default" : "outline"}
             onClick={() => setTransferMode("ALL")}
-            className={`h-20 text-xl font-bold rounded-2xl transition-all transform hover:scale-105 ${
+            className={`h-24 text-2xl font-bold rounded-2xl transition-all transform hover:scale-105 shadow-xl ${
               transferMode === "ALL"
-                ? "bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 hover:from-blue-700 hover:to-purple-800 shadow-2xl text-white"
-                : "border-3 border-gray-300 hover:border-blue-500 hover:bg-blue-50 text-gray-700"
+                ? "bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white"
+                : "border-4 border-blue-300 hover:border-blue-500 hover:bg-blue-50 text-gray-700"
             }`}
           >
             归集所有余额 (推荐)
@@ -189,10 +191,10 @@ export default function MonadSweeperApp() {
           <Button
             variant={transferMode === "FIXED" ? "default" : "outline"}
             onClick={() => setTransferMode("FIXED")}
-            className={`h-20 text-xl font-bold rounded-2xl transition-all transform hover:scale-105 ${
+            className={`h-24 text-2xl font-bold rounded-2xl transition-all transform hover:scale-105 shadow-xl ${
               transferMode === "FIXED"
-                ? "bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 hover:from-blue-700 hover:to-purple-800 shadow-2xl text-white"
-                : "border-3 border-gray-300 hover:border-blue-500 hover:bg-blue-50 text-gray-700"
+                ? "bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white"
+                : "border-4 border-blue-300 hover:border-blue-500 hover:bg-blue-50 text-gray-700"
             }`}
           >
             转账固定金额或每行指定金额
@@ -200,8 +202,8 @@ export default function MonadSweeperApp() {
         </div>
 
         {transferMode === "FIXED" && (
-          <div className="pt-6 p-6 bg-blue-50 rounded-2xl border-2 border-blue-300 shadow-inner">
-            <label htmlFor="fixed-amount" className="text-lg font-bold text-gray-900 block mb-3">
+          <div className="pt-8 p-8 bg-blue-50 rounded-2xl border-3 border-blue-400 shadow-lg">
+            <label htmlFor="fixed-amount" className="text-xl font-bold text-gray-900 block mb-4">
               统一转账金额 (MON):
             </label>
             <Input
@@ -210,28 +212,28 @@ export default function MonadSweeperApp() {
               value={fixedAmount}
               onChange={(e) => setFixedAmount(e.target.value)}
               placeholder="0.05"
-              className="font-mono h-14 text-lg border-2 rounded-xl"
+              className="font-mono h-16 text-xl border-3 rounded-xl"
             />
-            <p className="text-sm text-gray-700 mt-3 leading-relaxed font-medium">
+            <p className="text-base text-gray-700 mt-4 leading-relaxed font-medium">
               如果私钥行中未指定金额，将使用此金额。**请确保账户余额大于此金额 + Gas 费。**
             </p>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t-2 border-gray-200">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-10 border-t-4 border-blue-300">
         <Button
           onClick={handleParseKeys}
           disabled={isProcessing}
           variant="outline"
-          className="h-20 text-xl font-bold rounded-2xl border-3 border-blue-600 text-blue-700 hover:bg-blue-50 hover:border-blue-700 transition-all shadow-lg bg-white transform hover:scale-105"
+          className="h-24 text-2xl font-bold rounded-2xl border-4 border-blue-600 text-blue-700 hover:bg-blue-50 hover:border-blue-700 transition-all shadow-xl bg-white transform hover:scale-105"
         >
           解析并校验私钥
         </Button>
         <Button
           onClick={handleSweep}
           disabled={isProcessing || parsedAccounts.length === 0}
-          className={`h-20 text-xl font-black rounded-2xl transition-all shadow-2xl transform hover:scale-105 ${
+          className={`h-24 text-2xl font-black rounded-2xl transition-all shadow-2xl transform hover:scale-105 ${
             isSuccess
               ? "bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 hover:from-green-600 hover:to-teal-700"
               : "bg-gradient-to-r from-green-600 via-teal-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700"
@@ -239,11 +241,11 @@ export default function MonadSweeperApp() {
         >
           {isProcessing ? (
             <>
-              <Loader2 className="mr-3 h-7 w-7 animate-spin" /> 正在处理...
+              <Loader2 className="mr-4 h-8 w-8 animate-spin" /> 正在处理...
             </>
           ) : isSuccess ? (
             <>
-              <CheckCircle className="mr-3 h-7 w-7" /> 交易已发送
+              <CheckCircle className="mr-4 h-8 w-8" /> 交易已发送
             </>
           ) : (
             "开始批量归集"
