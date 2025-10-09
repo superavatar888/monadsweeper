@@ -27,18 +27,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js Environment
-        # 确保使用稳定的 Node.js 版本
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: 'npm'
+          # 关键修正：移除 cache: 'npm'，避免因缺少 package-lock.json 而失败
+          # 强制让 runner 在下一步进行全新安装
+          # cache: 'npm' 
 
       - name: Install Dependencies
-        # 运行安装命令
+        # 完整的 npm install 确保所有依赖都被下载
         run: npm install
 
       - name: Build and Export Next.js App
-        # Next.js 的 'next build' 配合 'output: "export"' 配置将生成静态文件到 'out' 目录
+        # 运行 build 脚本生成静态文件到 'out' 目录
         run: npm run build
 
       - name: Setup Pages Artifact
