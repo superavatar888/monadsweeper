@@ -1,10 +1,11 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // 保持静态导出模式
+  output: 'export', 
   trailingSlash: true, 
   
-  // 关键修复：设置资源前缀，确保浏览器能找到 CSS 和 JS
+  // 关键修复：设置资源前缀和基路径
+  // 根据您的 URL superavatar888.github.io/monadsweeper/，仓库名是 monadsweeper
   basePath: '/monadsweeper',
   assetPrefix: '/monadsweeper/',
 };
