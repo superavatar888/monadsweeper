@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
+import { Slot } from "@radix-ui/react-slot" // <-- 必须存在且被 package.json 依赖
 import { cva, type VariantProps } from "class-variance-authority"
 import { twMerge } from "tailwind-merge"
 import { clsx } from "clsx"
@@ -16,7 +16,7 @@ const buttonVariants = cva(
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        sweep: "bg-green-600 text-white hover:bg-green-700", // 归集按钮样式
+        sweep: "bg-green-600 text-white hover:bg-green-700",
       },
       size: {
         default: "h-10 px-4 py-2",
