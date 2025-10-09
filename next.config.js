@@ -1,9 +1,13 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // 启用静态导出
-  // 如果部署在 https://<your-username>.github.io/<repo-name>/，需要设置 basePath
-  // basePath: '/<repo-name>', 
-  // images: { unoptimized: true } // 如果使用 Next/Image
-}
-module.exports = nextConfig
+  output: 'export',
+  trailingSlash: true, // 确保静态链接正确
+  
+  // 关键修复：设置资源前缀和基路径
+  // 假设您的仓库名称是 monadsweeper (根据您截图中的 URL)
+  basePath: '/monadsweeper', 
+  assetPrefix: '/monadsweeper/',
+};
+
+module.exports = nextConfig;
