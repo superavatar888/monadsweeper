@@ -1,0 +1,67 @@
+Arguments: 
+  C:\nvm4w\nodejs\node.exe C:\Users\cai\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js install
+
+PATH: 
+  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\libnvvp;C:\Python312\Scripts\;C:\Python312\;D:\VMware\VMware Workstation\bin\;C:\Ruby32-x64\bin;C:\Python311\Scripts\;C:\Python311\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files\CMake\bin;C:\Program Files\dotnet\;C:\Program Files\Git\cmd;c:\Users\cai\AppData\Local\Programs\cursor\resources\app\bin;%NVM_HOME%;%NVM_SYMLINK%;C:\Program Files\NVIDIA Corporation\Nsight Compute 2024.3.2\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\cloudflared\;d:\Void\bin;E:\NetSarang\Xshell 8\;E:\NetSarang\Xftp 8\;E:\Redis\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\Pandoc\;d:\Trae\bin;C:\Users\cai\AppData\Local\pnpm;D:\VMware\VMware Workstation\bin\;C:\Ruby32-x64\bin;C:\Python311\Scripts\;C:\Python311\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files\CMake\bin;C:\Program Files\Git\cmd;C:\Users\cai\AppData\Local\Microsoft\WindowsApps;C:\Users\cai\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files (x86)\GnuWin32\bin;C:\Users\cai\.dotnet\tools;C:\Users\cai\AppData\Roaming\npm;C:\Users\cai\AppData\Local\Programs\Ollama;C:\Users\cai\AppData\Local\nvm;C:\nvm4w\nodejs;D:\Multipass\bin;C:\Users\cai\AppData\Local\Programs\Kiro\bin;C:\Users\cai\AppData\Local\Pandoc\
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  23.3.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: aborted
+      at TLSSocket.socketCloseListener (node:_http_client:472:19)
+      at TLSSocket.emit (node:events:525:35)
+      at node:net:350:12
+      at Socket.done (node:_tls_wrap:650:7)
+      at Object.onceWrapper (node:events:628:26)
+      at Socket.emit (node:events:525:35)
+      at TCP.<anonymous> (node:net:350:12)
+
+npm manifest: 
+  {
+    "name": "monad-sweeper-app",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint"
+    },
+    "dependencies": {
+      "@tanstack/react-query": "^5.45.1",
+      "@types/node": "^20.14.9",
+      "@types/react": "^18.3.3",
+      "@types/react-dom": "^18.3.0",
+      "autoprefixer": "^10.4.19",
+      "class-variance-authority": "^0.7.0",
+      "clsx": "^2.1.1",
+      "lucide-react": "^0.395.0",
+      "next": "15.0.0-rc.0",
+      "postcss": "^8.4.38",
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1",
+      "tailwind-merge": "^2.3.0",
+      "tailwindcss": "^3.4.4",
+      "tailwindcss-animate": "^1.0.7",
+      "typescript": "^5.5.3",
+      "viem": "^2.15.1",
+      "wagmi": "^2.11.0"
+    },
+    "devDependencies": {
+      "eslint": "^8.57.0",
+      "eslint-config-next": "15.0.0-rc.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
