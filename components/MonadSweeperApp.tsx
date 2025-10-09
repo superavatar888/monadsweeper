@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import { parseEther } from "viem"
 import { Button } from "@/components/ui/button" 
 import { Input } from "@/components/ui/input"   
-import { AlertTriangle, Loader2, CheckCircle } from 'lucide-react'; // 引入图标
+import { AlertTriangle, Loader2, CheckCircle } from 'lucide-react';
 
 // 定义地址和金额解析结果的类型
 interface AccountData {
@@ -47,7 +47,7 @@ export default function MonadSweeperApp() {
   const [targetAddress, setTargetAddress] = useState("")
   const [rawKeyInput, setRawKeyInput] = useState("")
   const [transferMode, setTransferMode] = useState<"ALL" | "FIXED">("ALL")
-  const [fixedAmount, setFixedAmount] = useState("0.05") 
+  const [fixedAmount, setFixedAmount] = useState("0.05") // 默认设置一个小的固定金额
   const [parsedAccounts, setParsedAccounts] = useState<AccountData[]>([])
   const [status, setStatus] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -66,6 +66,7 @@ export default function MonadSweeperApp() {
 
       // 1. 私钥格式校验
       const pk = privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`;
+      // 检查是否为标准的 66 位十六进制字符串
       if (pk.length !== 66 || !/^0x[0-9a-fA-F]{64}$/.test(pk)) {
         valid = false;
         error = "私钥格式错误";
@@ -167,7 +168,7 @@ export default function MonadSweeperApp() {
           id="private-keys"
           value={rawKeyInput}
           onChange={(e) => setRawKeyInput(e.target.value)}
-          rows={8}
+          rows={25} {/* <-- 关键修改：增加到 25 行，方便输入和检查 */}
           className="w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm font-mono placeholder:text-gray-400"
           placeholder="格式支持：&#10; 私钥 金额 (如: 0x... 0.05) &#10; 私钥,金额 (如: 0x...,0.05) &#10; 私钥=金额 (如: 0x...=0.05) &#10; 或仅填写私钥"
         />
@@ -244,14 +245,14 @@ export default function MonadSweeperApp() {
       {parsedAccounts.length > 0 && (
         <div className="mt-4 p-4 border rounded-lg bg-gray-50">
           <h4 className="font-bold mb-3">解析结果预览 ({parsedAccounts.length} 个钱包):</h4>
-          <div className="max-h-60 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto"> {/* 增加预览区高度，方便查看大量结果 */}
             <table className="w-full text-left text-sm table-fixed">
               <thead>
                 <tr className="border-b bg-gray-100 sticky top-0">
                   <th className="w-10 p-2">#</th>
-                  <th className="w-1/3 p-2">私钥 (部分)</th>
-                  <th className="w-1/3 p-2">转账金额</th>
-                  <th className="w-1/6 p-2">状态</th>
+                  <th className="w-1/3">私钥 (部分)</th>
+                  <th className="w-1/3">转账金额</th>
+                  <th className="w-1/6">状态</th>
                 </tr>
               </thead>
               <tbody>
