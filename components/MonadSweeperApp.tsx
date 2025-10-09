@@ -2,7 +2,6 @@
 
 import React, { useState } from "react"
 import { parseEther } from "viem"
-// 确保导入路径正确，并依赖于 package.json 中的 @radix-ui/react-slot
 import { Button } from "@/components/ui/button" 
 import { Input } from "@/components/ui/input"   
 import { AlertTriangle, Loader2, CheckCircle } from 'lucide-react';
@@ -169,7 +168,7 @@ export default function MonadSweeperApp() {
           id="private-keys"
           value={rawKeyInput}
           onChange={(e) => setRawKeyInput(e.target.value)}
-          rows={25} /* <-- 增加到 25 行，提供大面积输入框 */
+          rows={25} /* <-- 增加到 25 行 */
           className="w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm font-mono placeholder:text-gray-400"
           placeholder="格式支持：&#10; 私钥 金额 (如: 0x... 0.05) &#10; 私钥,金额 (如: 0x...,0.05) &#10; 私钥=金额 (如: 0x...=0.05) &#10; 或仅填写私钥"
         />
