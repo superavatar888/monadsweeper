@@ -1,0 +1,63 @@
+name: Deploy Monad Sweeper App to GitHub Pages
+
+on:
+  # 触发条件：当代码推送到 main 分支时自动运行
+  push:
+    branches:
+      - main
+  # 允许通过 GitHub Actions 界面手动运行
+  workflow_dispatch:
+
+# 设置权限：需要读取内容、写入 Pages 和获取 ID 令牌的权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 确保只有一个部署作业在运行
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        # 确保使用稳定的 Node.js 版本
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+
+      - name: Install Dependencies
+        # 运行安装命令
+        run: npm install
+
+      - name: Build and Export Next.js App
+        # Next.js 的 'next build' 配合 'output: "export"' 配置将生成静态文件到 'out' 目录
+        run: npm run build
+
+      - name: Setup Pages Artifact
+        # 将构建产物 (out 目录) 上传为 Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out 
+
+  deploy:
+    # 部署作业需要等待构建作业完成
+    needs: build
+    
+    # 部署到 GitHub Pages 环境
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
