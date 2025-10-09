@@ -2,8 +2,8 @@
 
 import React, { useState } from "react"
 import { parseEther } from "viem"
-import { Button } from "@/components/ui/button" 
-import { Input } from "@/components/ui/input"   
+import { Button } from "@/components/ui/button" // 修正导入路径
+import { Input } from "@/components/ui/input"   // 修正导入路径
 import { AlertTriangle, Loader2, CheckCircle } from 'lucide-react';
 
 // 定义地址和金额解析结果的类型
@@ -47,7 +47,7 @@ export default function MonadSweeperApp() {
   const [targetAddress, setTargetAddress] = useState("")
   const [rawKeyInput, setRawKeyInput] = useState("")
   const [transferMode, setTransferMode] = useState<"ALL" | "FIXED">("ALL")
-  const [fixedAmount, setFixedAmount] = useState("0.05") // 默认设置一个小的固定金额
+  const [fixedAmount, setFixedAmount] = useState("0.05") 
   const [parsedAccounts, setParsedAccounts] = useState<AccountData[]>([])
   const [status, setStatus] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -122,7 +122,7 @@ export default function MonadSweeperApp() {
     setStatus(`🎉 归集交易已发送！请检查区块链确认结果。`);
   }
 
-  return (
+  return ( // 确保这里的 return 是正确的起始点
     // 界面放大：使用 max-w-2xl 约束宽度，增加内边距和圆角
     <div className="max-w-2xl w-full mx-auto p-8 bg-white rounded-2xl shadow-2xl space-y-8">
       
@@ -168,7 +168,7 @@ export default function MonadSweeperApp() {
           id="private-keys"
           value={rawKeyInput}
           onChange={(e) => setRawKeyInput(e.target.value)}
-          rows={25} {/* <-- 关键修改：增加到 25 行，方便输入和检查 */}
+          rows={25} 
           className="w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm font-mono placeholder:text-gray-400"
           placeholder="格式支持：&#10; 私钥 金额 (如: 0x... 0.05) &#10; 私钥,金额 (如: 0x...,0.05) &#10; 私钥=金额 (如: 0x...=0.05) &#10; 或仅填写私钥"
         />
@@ -245,7 +245,7 @@ export default function MonadSweeperApp() {
       {parsedAccounts.length > 0 && (
         <div className="mt-4 p-4 border rounded-lg bg-gray-50">
           <h4 className="font-bold mb-3">解析结果预览 ({parsedAccounts.length} 个钱包):</h4>
-          <div className="max-h-96 overflow-y-auto"> {/* 增加预览区高度，方便查看大量结果 */}
+          <div className="max-h-96 overflow-y-auto">
             <table className="w-full text-left text-sm table-fixed">
               <thead>
                 <tr className="border-b bg-gray-100 sticky top-0">
