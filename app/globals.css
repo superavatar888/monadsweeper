@@ -51,7 +51,8 @@
 
 @layer base {
   * {
-    @apply border-border;
+    /* FIX: Replaced problematic @apply with theme() function */
+    border-color: theme('colors.border');
   }
   body {
     @apply bg-background text-foreground;
