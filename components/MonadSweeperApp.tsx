@@ -96,29 +96,29 @@ export default function MonadSweeperApp() {
     setStatus(`🎉 归集交易已发送！请检查区块链确认结果。`)
   }
 
-  // --- 🚀 UI 重构开始 ---
+  // --- 🚀 UI 重构 (参考版) ---
   return (
-    <div className="w-full max-w-5xl mx-auto p-8 space-y-8">
-      <header className="text-center space-y-4">
-        <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+    <div className="w-full max-w-4xl mx-auto p-4 sm:p-8 space-y-6">
+      <header className="text-center space-y-2">
+        <h1 className="text-4xl font-bold text-gray-800">
           MONAD 空投归集工具
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          从多个空投钱包批量发送 MON 代币到交易所。
+        <p className="text-md text-gray-500">
+          从多个空投钱包批量发送 MON 代币到交易所
         </p>
       </header>
 
-      <div className="p-4 bg-amber-100/50 border-l-4 border-amber-500 text-amber-900 rounded-lg flex items-center gap-4">
-        <AlertTriangle className="h-6 w-6 flex-shrink-0 text-amber-600" />
-        <p className="text-base font-semibold">警告：本工具涉及私钥操作，请务必在**离线/安全环境**中使用！</p>
+      <div className="p-4 bg-amber-50 border-l-4 border-amber-400 text-amber-800 rounded-md flex items-center gap-3">
+        <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+        <p className="text-sm font-medium">警告：本工具涉及私钥操作，请务必在**离线/安全环境**中使用！</p>
       </div>
 
-      <div className="space-y-6 bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border">
+      <div className="space-y-6 border rounded-lg p-6 bg-white">
         {/* --- 步骤 1: 目标地址 --- */}
-        <div className="space-y-3">
-          <label htmlFor="target-address" className="text-lg font-bold text-gray-800 flex items-center gap-2">
-            <Wallet className="h-5 w-5 text-blue-600" />
-            第一步：输入归集地址
+        <div className="space-y-2">
+          <label htmlFor="target-address" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <span className="flex items-center justify-center w-5 h-5 bg-gray-200 text-gray-600 rounded-full text-xs font-bold">1</span>
+            输入归集地址
           </label>
           <Input
             id="target-address"
@@ -126,55 +126,61 @@ export default function MonadSweeperApp() {
             value={targetAddress}
             onChange={(e) => setTargetAddress(e.target.value)}
             placeholder="输入您的交易所充值地址或个人钱包地址 0x..."
-            className="h-14 text-base font-mono rounded-lg"
+            className="h-11 text-sm font-mono"
           />
         </div>
 
         {/* --- 步骤 2: 私钥列表 --- */}
-        <div className="space-y-3">
-          <label htmlFor="private-keys" className="text-lg font-bold text-gray-800 flex items-center gap-2">
-            <FileScan className="h-5 w-5 text-blue-600" />
-            第二步：粘贴私钥列表
+        <div className="space-y-2">
+          <label htmlFor="private-keys" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <span className="flex items-center justify-center w-5 h-5 bg-gray-200 text-gray-600 rounded-full text-xs font-bold">2</span>
+            粘贴私钥列表
           </label>
           <textarea
             id="private-keys"
             value={rawKeyInput}
             onChange={(e) => setRawKeyInput(e.target.value)}
-            rows={15} // 调整了默认行数，但保留可调整高度
-            className="w-full p-4 border rounded-lg text-sm font-mono placeholder:text-gray-400 shadow-inner bg-gray-50/50 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition resize-y"
+            rows={10}
+            className="w-full p-3 border rounded-md text-xs font-mono placeholder:text-gray-400 bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition resize-y"
             placeholder={`格式支持 (每行一个):\n私钥 金额 (例如: 0x... 0.05)\n私钥,金额 (例如: 0x...,0.05)\n或者仅私钥`}
           />
         </div>
         
         {/* --- 步骤 3: 转账模式 --- */}
-        <div className="space-y-4 pt-4 border-t">
-            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                <Send className="h-5 w-5 text-blue-600" />
-                第三步：选择转账模式
+        <div className="space-y-3 pt-4 border-t">
+            <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <span className="flex items-center justify-center w-5 h-5 bg-gray-200 text-gray-600 rounded-full text-xs font-bold">3</span>
+                选择转账模式
             </h3>
-            {/* 优化后的按钮组，不再拉伸 */}
-            <div className="p-1 rounded-full bg-gray-200/70 max-w-md mx-auto">
-                <div className="flex items-center gap-1">
-                    <Button
-                        variant={transferMode === 'ALL' ? 'default' : 'outline'}
-                        onClick={() => setTransferMode('ALL')}
-                        className={`w-1/2 rounded-full text-base font-bold transition-all h-12 ${transferMode === 'ALL' ? 'bg-blue-600 text-white shadow-md' : 'bg-transparent border-0 text-gray-600 hover:bg-white'}`}
-                    >
-                        归集所有余额 (推荐)
-                    </Button>
-                    <Button
-                        variant={transferMode === 'FIXED' ? 'default' : 'outline'}
-                        onClick={() => setTransferMode('FIXED')}
-                        className={`w-1/2 rounded-full text-base font-bold transition-all h-12 ${transferMode === 'FIXED' ? 'bg-blue-600 text-white shadow-md' : 'bg-transparent border-0 text-gray-600 hover:bg-white'}`}
-                    >
-                        指定金额
-                    </Button>
-                </div>
+            {/* 参照截图优化的按钮组 */}
+            <div className="grid grid-cols-2 gap-1 rounded-lg bg-gray-100 p-1 border">
+                <Button
+                    onClick={() => setTransferMode('ALL')}
+                    variant="ghost" // 使用 ghost 变体以实现默认透明
+                    className={`h-10 text-sm font-semibold transition-all rounded-md ${
+                        transferMode === 'ALL' 
+                        ? 'bg-white shadow-sm text-blue-600' 
+                        : 'text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                    归集所有余额 (推荐)
+                </Button>
+                <Button
+                    onClick={() => setTransferMode('FIXED')}
+                    variant="ghost"
+                    className={`h-10 text-sm font-semibold transition-all rounded-md ${
+                        transferMode === 'FIXED' 
+                        ? 'bg-white shadow-sm text-blue-600' 
+                        : 'text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                    指定金额
+                </Button>
             </div>
 
             {transferMode === 'FIXED' && (
-              <div className="pt-4 px-4 pb-2 bg-blue-50/70 rounded-lg border border-blue-200">
-                <label htmlFor="fixed-amount" className="text-sm font-bold text-gray-800 block mb-2">
+              <div className="pt-3 px-3 pb-2 bg-gray-50 rounded-md border">
+                <label htmlFor="fixed-amount" className="text-xs font-semibold text-gray-600 block mb-1">
                   统一转账金额 (MON):
                 </label>
                 <Input
@@ -183,47 +189,34 @@ export default function MonadSweeperApp() {
                   value={fixedAmount}
                   onChange={(e) => setFixedAmount(e.target.value)}
                   placeholder="0.05"
-                  className="font-mono h-12"
+                  className="h-9 font-mono text-sm"
                 />
-                <p className="text-xs text-gray-600 mt-2">
-                  如果私钥行中未指定金额，将使用此金额。
-                </p>
               </div>
             )}
         </div>
       </div>
 
       {/* --- 最终操作按钮 --- */}
-      <div className="flex flex-col sm:flex-row justify-end items-center gap-4 p-6 bg-gray-100/80 rounded-2xl border">
-        {status && (
-            <div className={`flex-grow text-center sm:text-left text-sm font-semibold p-2 rounded-md ${
-                status.includes("错误") ? "text-red-700" : isSuccess ? "text-green-700" : "text-blue-700"
-            }`}>
-                {status}
-            </div>
-        )}
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg border">
+        <div className="flex-grow text-gray-600 text-sm font-medium">
+            {status ? status : "请按步骤操作"}
+        </div>
+        <div className="flex items-center gap-3">
             <Button
               onClick={handleParseKeys}
               disabled={isProcessing}
               variant="outline"
-              className="h-14 px-6 text-base font-bold rounded-lg border-2"
+              className="h-10 px-5 text-sm font-semibold"
             >
               解析并校验
             </Button>
             <Button
               onClick={handleSweep}
               disabled={isProcessing || parsedAccounts.filter(a => a.valid).length === 0}
-              className={`h-14 px-8 text-base font-bold rounded-lg shadow-lg transition-all transform hover:scale-105 ${
-                isSuccess
-                  ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white"
-                  : "bg-gradient-to-r from-blue-600 to-purple-700 text-white"
-              }`}
+              className="h-10 px-5 text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
             >
               {isProcessing ? (
-                <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> 正在归集...</>
-              ) : isSuccess ? (
-                <><CheckCircle className="mr-2 h-5 w-5" /> 完成</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> 正在归集</>
               ) : (
                 "开始归集"
               )}
@@ -233,27 +226,29 @@ export default function MonadSweeperApp() {
 
       {/* --- 解析结果预览 --- */}
       {parsedAccounts.length > 0 && (
-        <div className="mt-4 p-6 border rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg">
-          <h4 className="text-lg font-bold mb-4 text-gray-900">解析结果预览 ({parsedAccounts.length} 个钱包):</h4>
-          <div className="max-h-80 overflow-y-auto rounded-lg border shadow-inner">
-            <table className="w-full text-left text-sm table-fixed">
-              <thead className="bg-gray-100 sticky top-0">
-                <tr className="border-b">
-                  <th className="w-16 p-3 font-semibold text-gray-700">#</th>
-                  <th className="w-1/3 p-3 font-semibold text-gray-700">私钥 (部分)</th>
-                  <th className="w-1/3 p-3 font-semibold text-gray-700">转账金额</th>
-                  <th className="w-1/6 p-3 font-semibold text-gray-700">状态</th>
+        <div className="border rounded-lg bg-white">
+          <div className="p-4 border-b">
+            <h4 className="text-md font-semibold text-gray-800">解析结果预览 ({parsedAccounts.length} 个钱包):</h4>
+          </div>
+          <div className="max-h-64 overflow-y-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-gray-50 sticky top-0">
+                <tr>
+                  <th className="w-12 p-2.5 font-semibold text-gray-600">#</th>
+                  <th className="p-2.5 font-semibold text-gray-600">私钥 (部分)</th>
+                  <th className="p-2.5 font-semibold text-gray-600">转账金额</th>
+                  <th className="p-2.5 font-semibold text-gray-600">状态</th>
                 </tr>
               </thead>
-              <tbody className="bg-white">
+              <tbody className="divide-y">
                 {parsedAccounts.map((acc, index) => (
-                  <tr key={index} className="border-b last:border-b-0 hover:bg-blue-50/50 transition-colors">
-                    <td className="p-3 font-medium text-gray-600">{index + 1}</td>
-                    <td className="truncate font-mono p-3 text-gray-800">{acc.privateKey.slice(0, 10)}...</td>
-                    <td className="p-3 font-semibold text-gray-800">
+                  <tr key={index} className="hover:bg-gray-50/50">
+                    <td className="p-2.5 font-medium text-gray-500">{index + 1}</td>
+                    <td className="truncate font-mono p-2.5 text-gray-700">{acc.privateKey.slice(0, 10)}...</td>
+                    <td className="p-2.5 font-semibold text-gray-700">
                       {acc.amount || (transferMode === "ALL" ? "全部余额" : fixedAmount)}
                     </td>
-                    <td className={`p-3 font-bold ${acc.valid ? "text-green-600" : "text-red-600"}`}>
+                    <td className={`p-2.5 font-bold ${acc.valid ? "text-green-600" : "text-red-600"}`}>
                       {acc.valid ? "✓ 有效" : `✗ ${acc.error}`}
                     </td>
                   </tr>
