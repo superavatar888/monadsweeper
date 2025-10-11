@@ -104,7 +104,7 @@ export default function MonadSweeperApp() {
     setStatus(`🎉 归集交易已发送！`);
   };
 
-  // --- 🚀 UI 重构 (Dashboard 风格) ---
+  // --- UI (Dashboard 风格) ---
   return (
     <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
       {/* --- 顶部 Header --- */}
