@@ -156,7 +156,7 @@ export default function MonadSweeperApp() {
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
           >
-            石墨烯布置器 (推荐)
+            归集所有余额(推荐)
           </Button>
           <Button
             onClick={() => setTransferMode("FIXED")}
@@ -167,7 +167,7 @@ export default function MonadSweeperApp() {
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
           >
-            转账测定金额(生成)到指定金额
+            转账固定金额到指定地址
           </Button>
         </div>
         {transferMode === "FIXED" && (
@@ -203,7 +203,7 @@ export default function MonadSweeperApp() {
               <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 正在归集
             </>
           ) : (
-            "开始随机归集"
+            "开始批量归集"
           )}
         </Button>
       </div>
