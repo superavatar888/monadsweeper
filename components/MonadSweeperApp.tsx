@@ -4,16 +4,7 @@ import { useState } from "react";
 import { parseEther } from "viem";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  AlertTriangle,
-  Loader2,
-  CheckCircle,
-  Wallet,
-  Send,
-  FileScan,
-  Settings,
-  ListChecks,
-} from "lucide-react";
+import { AlertTriangle, Loader2, CheckCircle } from "lucide-react";
 
 // (接口和辅助函数部分保持不变)
 interface AccountData {
@@ -104,103 +95,115 @@ export default function MonadSweeperApp() {
     setStatus(`🎉 归集交易已发送！`);
   };
 
-  // --- UI (Dashboard 风格) ---
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
-      {/* --- 顶部 Header --- */}
-      <header className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-        <div>
-          <h1 className="text-xl font-bold text-gray-800">Monad Airdrop Sweeper</h1>
-          <p className="text-sm text-gray-500">一个高效、安全的空投批量归集工具</p>
-        </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold hidden sm:flex">
-          <Wallet className="mr-2 h-4 w-4" /> Connect Wallet
-        </Button>
+    // --- 主容器卡片 ---
+    <div className="w-full max-w-3xl mx-auto p-8 sm:p-10 bg-white rounded-2xl shadow-xl space-y-8">
+      {/* --- Header --- */}
+      <header className="text-center space-y-2">
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
+          MONAD 空投归集工具
+        </h1>
+        <p className="text-md text-gray-500">
+          从多个空投钱包批量发送 MON 代币到交易所
+        </p>
       </header>
 
-      {/* --- 主内容区：左侧输入，右侧设置 --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* --- 左侧主操作区 --- */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-            <label className="text-md font-semibold text-gray-700 flex items-center gap-2 mb-3">
-              <span className="text-blue-600"><Wallet size={18} /></span> 目标地址
-            </label>
-            <Input
-              id="target-address"
-              type="text"
-              value={targetAddress}
-              onChange={(e) => setTargetAddress(e.target.value)}
-              placeholder="粘贴您的交易所充值地址 0x..."
-              className="h-12 text-sm font-mono"
-            />
-          </div>
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-            <label className="text-md font-semibold text-gray-700 flex items-center gap-2 mb-3">
-              <span className="text-blue-600"><FileScan size={18} /></span> 私钥列表
-            </label>
-            <textarea
-              id="private-keys"
-              value={rawKeyInput}
-              onChange={(e) => setRawKeyInput(e.target.value)}
-              rows={12}
-              className="w-full p-3 border rounded-lg text-xs font-mono placeholder:text-gray-400 bg-gray-50 focus:ring-2 focus:ring-blue-400 transition resize-y"
-              placeholder="每行一个私钥，支持格式：[私钥] 或 [私钥] [金额]"
-            />
-             <div className="p-3 mt-3 bg-amber-50 border-l-4 border-amber-400 text-amber-800 rounded-md text-xs">
-                <p className="font-medium">请在离线环境下操作，确保资金安全。</p>
-            </div>
-          </div>
-        </div>
+      {/* --- 警告框 --- */}
+      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3">
+        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-amber-500" />
+        <p className="text-sm font-semibold text-amber-800">警告：本工具涉及私钥操作，请务必在**离线/安全环境**中使用！</p>
+      </div>
 
-        {/* --- 右侧设置与操作区 --- */}
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-            <h3 className="text-md font-semibold text-gray-700 flex items-center gap-2 mb-4">
-              <span className="text-purple-600"><Settings size={18} /></span> 转账模式
-            </h3>
-            <div className="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 border">
-                <Button onClick={() => setTransferMode('ALL')} variant="ghost" className={`h-10 text-xs font-bold transition-all rounded-md ${ transferMode === 'ALL' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-500 hover:bg-gray-200' }`}>归集所有</Button>
-                <Button onClick={() => setTransferMode('FIXED')} variant="ghost" className={`h-10 text-xs font-bold transition-all rounded-md ${ transferMode === 'FIXED' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-500 hover:bg-gray-200' }`}>指定金额</Button>
-            </div>
-            {transferMode === 'FIXED' && (
-              <div className="mt-4">
-                <Input id="fixed-amount" type="text" value={fixedAmount} onChange={(e) => setFixedAmount(e.target.value)} placeholder="0.05" className="h-10 font-mono text-sm" />
-              </div>
-            )}
-          </div>
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-             <h3 className="text-md font-semibold text-gray-700 flex items-center gap-2">
-              <span className="text-green-600"><Send size={18} /></span> 执行操作
-            </h3>
-            <Button onClick={handleParseKeys} disabled={isProcessing} variant="outline" className="w-full h-11 text-sm font-semibold">
-                <ListChecks className="mr-2 h-4 w-4" /> 解析并校验
-            </Button>
-            <Button onClick={handleSweep} disabled={isProcessing || parsedAccounts.filter(a => a.valid).length === 0} className="w-full h-11 text-sm font-semibold bg-green-600 text-white hover:bg-green-700">
-              {isProcessing ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> 正在归集...</>) : "开始归集"}
-            </Button>
-            {status && (
-                <div className="pt-2 text-center text-xs font-medium text-gray-500">
-                    {status}
-                </div>
-            )}
-          </div>
+      {/* --- 表单部分 --- */}
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <label htmlFor="target-address" className="text-sm font-bold text-gray-700">
+            目标交易所地址 (归集地址):
+          </label>
+          <Input
+            id="target-address"
+            type="text"
+            value={targetAddress}
+            onChange={(e) => setTargetAddress(e.target.value)}
+            placeholder="0x..."
+            className="h-12 text-sm font-mono border-gray-200 bg-gray-50/50"
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="private-keys" className="text-sm font-bold text-gray-700">
+            私钥列表 (每行一个):
+          </label>
+          <textarea
+            id="private-keys"
+            value={rawKeyInput}
+            onChange={(e) => setRawKeyInput(e.target.value)}
+            rows={10}
+            className="w-full p-3 border border-gray-200 rounded-lg text-xs font-mono placeholder:text-gray-400 bg-gray-50/50 focus:ring-2 focus:ring-blue-400 transition resize-y"
+            placeholder={`格式支持:\n私钥 金额 (例: 0x... 0.05)\n私钥,金额 (例: 0x...,0.05)\n或者仅私钥`}
+          />
         </div>
       </div>
 
-      {/* --- 解析结果预览 --- */}
-      {parsedAccounts.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="p-4 border-b">
-            <h4 className="text-md font-semibold text-gray-800">解析结果预览</h4>
+      {/* --- 转账模式按钮 --- */}
+      <div className="space-y-4 pt-6 border-t">
+        <label className="text-sm font-bold text-gray-700">转账模式:</label>
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={() => setTransferMode('ALL')}
+            variant="outline"
+            className={`h-12 text-sm font-bold rounded-lg transition-all ${
+              transferMode === 'ALL'
+                ? 'bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 shadow-md'
+                : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            归集所有余额 (推荐)
+          </Button>
+          <Button
+            onClick={() => setTransferMode('FIXED')}
+            variant="outline"
+            className={`h-12 text-sm font-bold rounded-lg transition-all ${
+              transferMode === 'FIXED'
+                ? 'bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 shadow-md'
+                : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            转账固定金额或每行指定金额
+          </Button>
+        </div>
+        {transferMode === "FIXED" && (
+          <div className="pt-2">
+            <Input id="fixed-amount" type="text" value={fixedAmount} onChange={(e) => setFixedAmount(e.target.value)} placeholder="请输入统一转账金额，例如: 0.05" className="h-11 font-mono text-sm" />
           </div>
-          <div className="max-h-64 overflow-y-auto">
+        )}
+      </div>
+
+      {/* --- 操作按钮 --- */}
+      <div className="grid grid-cols-2 gap-3 pt-6 border-t">
+        <Button onClick={handleParseKeys} disabled={isProcessing} variant="outline" className="h-12 text-sm font-bold border-2 border-blue-500 text-blue-500 hover:bg-blue-50">
+          解析并校验私钥
+        </Button>
+        <Button onClick={handleSweep} disabled={isProcessing || parsedAccounts.filter(a => a.valid).length === 0} className="h-12 text-sm font-bold text-white bg-gradient-to-r from-green-400 to-cyan-500 hover:from-green-500 hover:to-cyan-600 shadow-md">
+          {isProcessing ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> 正在归集</>) : "开始批量归集"}
+        </Button>
+      </div>
+
+      {/* --- 状态和结果 --- */}
+      {status && (
+        <div className="text-center text-sm font-medium text-gray-500 pt-2">
+          {status}
+        </div>
+      )}
+      {parsedAccounts.length > 0 && (
+        <div className="pt-6 border-t">
+          <h4 className="text-md font-bold text-gray-800 mb-3">解析结果预览</h4>
+          <div className="max-h-60 overflow-y-auto border rounded-lg">
             <table className="w-full text-left text-xs">
               <thead className="bg-gray-50 sticky top-0">
                 <tr>
                   <th className="w-12 p-2.5 font-semibold text-gray-600">#</th>
-                  <th className="p-2.5 font-semibold text-gray-600">私钥 (部分)</th>
-                  <th className="p-2.5 font-semibold text-gray-600">转账金额</th>
+                  <th className="p-2.5 font-semibold text-gray-600">私钥(部分)</th>
+                  <th className="p-2.5 font-semibold text-gray-600">金额</th>
                   <th className="p-2.5 font-semibold text-gray-600">状态</th>
                 </tr>
               </thead>
@@ -209,7 +212,7 @@ export default function MonadSweeperApp() {
                   <tr key={index}>
                     <td className="p-2.5 font-medium text-gray-500">{index + 1}</td>
                     <td className="truncate font-mono p-2.5 text-gray-700">{acc.privateKey.slice(0, 10)}...</td>
-                    <td className="p-2.5 font-semibold text-gray-700">{acc.amount || (transferMode === "ALL" ? "全部余额" : fixedAmount)}</td>
+                    <td className="p-2.5 font-semibold text-gray-700">{acc.amount || (transferMode === "ALL" ? "全部" : fixedAmount)}</td>
                     <td className={`p-2.5 font-bold ${acc.valid ? "text-green-600" : "text-red-600"}`}>{acc.valid ? "✓ 有效" : `✗ ${acc.error}`}</td>
                   </tr>
                 ))}
