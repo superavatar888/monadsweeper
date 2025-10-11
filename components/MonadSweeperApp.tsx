@@ -102,15 +102,15 @@ export default function MonadSweeperApp() {
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto p-8 bg-white rounded-xl shadow-lg space-y-6">
-      <header className="text-center space-y-1">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+    <div className="w-full max-w-xl mx-auto p-6 bg-white rounded-2xl shadow-xl space-y-5">
+      <header className="text-center space-y-2">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
           MONAD 空投归集工具
         </h1>
         <p className="text-sm text-gray-600">从多个空投钱包批量发送 MON 代币到交易所</p>
       </header>
 
-      <div className="p-3 bg-amber-50 border border-amber-200 rounded-md flex items-start gap-2">
+      <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
         <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-600 mt-0.5" />
         <p className="text-xs text-amber-800">警告：本工具涉及私钥操作，请务必在**离线/安全环境**中使用！</p>
       </div>
@@ -137,22 +137,22 @@ export default function MonadSweeperApp() {
             id="private-keys"
             value={rawKeyInput}
             onChange={(e) => setRawKeyInput(e.target.value)}
-            rows={12}
-            className="w-full p-3 border border-gray-300 rounded-md text-xs font-mono placeholder:text-gray-400 bg-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition resize-none"
+            rows={10}
+            className="w-full p-3 border border-gray-300 rounded-lg text-xs font-mono placeholder:text-gray-400 bg-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition resize-none"
             placeholder={`格式支持:\n私钥 金额 (例: 0x... 0.05)\n私钥,金额 (例: 0x...,0.05)\n或者仅私钥\n\n支持以下格式:\n私钥 金额 (例: 0x... 0.05)\n私钥,金额 (例: 0x...,0.05)\n私钥=金额 (例: 0x...=0.05)\n\n支持以下格式并自动解析，只需输入地址即可...`}
           />
         </div>
       </div>
 
-      <div className="space-y-3 pt-2">
+      <div className="space-y-3 pt-1">
         <label className="text-sm font-medium text-gray-700">转账模式:</label>
         <div className="grid grid-cols-2 gap-3">
           <Button
             onClick={() => setTransferMode("ALL")}
             variant="outline"
-            className={`h-11 text-sm font-medium rounded-md transition-all ${
+            className={`h-11 text-sm font-medium rounded-lg transition-all ${
               transferMode === "ALL"
-                ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 shadow-sm hover:from-blue-700 hover:to-purple-700"
+                ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white border-0 shadow-md hover:from-indigo-700 hover:to-blue-700"
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
           >
@@ -161,9 +161,9 @@ export default function MonadSweeperApp() {
           <Button
             onClick={() => setTransferMode("FIXED")}
             variant="outline"
-            className={`h-11 text-sm font-medium rounded-md transition-all ${
+            className={`h-11 text-sm font-medium rounded-lg transition-all ${
               transferMode === "FIXED"
-                ? "bg-white text-gray-700 border-gray-300 shadow-sm"
+                ? "bg-gray-100 text-gray-700 border-gray-300 shadow-sm"
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
           >
@@ -184,19 +184,19 @@ export default function MonadSweeperApp() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 pt-2">
+      <div className="grid grid-cols-2 gap-3 pt-1">
         <Button
           onClick={handleParseKeys}
           disabled={isProcessing}
           variant="outline"
-          className="h-11 text-sm font-medium border-2 border-blue-400 text-blue-600 hover:bg-blue-50 rounded-md bg-transparent"
+          className="h-11 text-sm font-medium border-2 border-blue-400 text-blue-600 hover:bg-blue-50 rounded-lg bg-white"
         >
           转账并检验私钥
         </Button>
         <Button
           onClick={handleSweep}
           disabled={isProcessing || parsedAccounts.filter((a) => a.valid).length === 0}
-          className="h-11 text-sm font-medium text-white bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-500 hover:to-cyan-600 shadow-sm rounded-md"
+          className="h-11 text-sm font-medium text-white bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-500 hover:to-cyan-600 shadow-md rounded-lg border-0"
         >
           {isProcessing ? (
             <>
@@ -208,11 +208,11 @@ export default function MonadSweeperApp() {
         </Button>
       </div>
 
-      {status && <div className="text-center text-sm font-medium text-gray-500 pt-2">{status}</div>}
+      {status && <div className="text-center text-sm font-medium text-gray-600 pt-2">{status}</div>}
       {parsedAccounts.length > 0 && (
         <div className="pt-4 border-t border-gray-200">
           <h4 className="text-sm font-semibold text-gray-800 mb-3">解析结果预览</h4>
-          <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md">
+          <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg">
             <table className="w-full text-left text-xs">
               <thead className="bg-gray-50 sticky top-0">
                 <tr>
