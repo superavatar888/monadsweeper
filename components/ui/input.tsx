@@ -1,10 +1,5 @@
 import * as React from "react"
-import { twMerge } from "tailwind-merge"
-import { clsx } from "clsx"
-
-export function cn(...inputs: any) { 
-  return twMerge(clsx(inputs))
-}
+import { cn } from "@/lib/utils" // <-- 从新的工具文件导入
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
