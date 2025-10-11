@@ -1,13 +1,10 @@
-import MonadSweeperApp from "../components/MonadSweeperApp"
+import MonadSweeperApp from "../components/MonadSweeperApp";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-100 via-blue-50 to-purple-50 py-16">
-      <div className="container mx-auto px-6">
-        <div className="flex justify-center">
-          <MonadSweeperApp />
-        </div>
-      </div>
+    // 🚀 FIX: 将背景更新为浅灰色，以匹配 Dashboard 风格
+    <main className="min-h-screen bg-gray-100 font-sans">
+      <MonadSweeperApp />
     </main>
-  )
+  );
 }
