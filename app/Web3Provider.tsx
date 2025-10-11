@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import React, { ReactNode } from "react"
-import { WagmiProvider, createConfig, http } from "wagmi"
-import { mainnet, sepolia } from "wagmi/chains"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import React, { ReactNode } from "react";
+import { WagmiProvider, createConfig, http } from "wagmi";
+import { mainnet, sepolia } from "wagmi/chains";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// 1. 定义 Monad 占位符链配置 (主网上线后需替换此配置)
+// 🚀 1. 根据官方信息更新 Monad 主网配置
 const monadChain = {
-  id: 77777, // Monad 假设 Chain ID
-  name: 'Monad Mainnet (Placeholder)',
-  nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 },
+  id: 143, // <-- 已更新为官方 ChainID
+  name: "Monad Mainnet",
+  nativeCurrency: { name: "MON", symbol: "MON", decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://rpc.monad.xyz'] }, // 需替换为 Monad 真实主网 RPC
-    public: { http: ['https://rpc.monad.xyz'] },
+    // !! TODO: 官方 RPC 地址发布后，请务必在此处进行替换
+    default: { http: ["https://rpc.monad.xyz"] },
+    public: { http: ["https://rpc.monad.xyz"] },
   },
   blockExplorers: {
-    default: { name: 'Monadscan', url: 'https://monadscan.io' }, // 需替换为真实区块浏览器
+    // !! TODO: 官方区块浏览器发布后，请在此处确认或替换
+    default: { name: "Monadscan", url: "https://monadscan.io" },
   },
 } as const;
 
-const chains = [monadChain, mainnet, sepolia] as const
+const chains = [monadChain, mainnet, sepolia] as const;
 
-// 2. 创建 Wagmi 配置
+// 2. 创建 Wagmi 配置 (确保 transports 中的 ID 与 monadChain.id 匹配)
 const config = createConfig({
   chains: chains,
   transports: {
-    [monadChain.id]: http(),
+    [monadChain.id]: http(), // 这里会自动使用新的 ID: 143
     [mainnet.id]: http(),
     [sepolia.id]: http(),
   },
-})
+});
 
 // 3. 创建 React Query 客户端
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 interface Web3ProviderProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export default function Web3Provider({ children }: Web3ProviderProps) {
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
-  )
+  );
 }
