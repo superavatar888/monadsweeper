@@ -51,8 +51,8 @@
 
 @layer base {
   * {
-    /* FIX: Replaced problematic @apply with theme() function */
-    border-color: theme('colors.border');
+    /* FINAL FIX: Directly use the CSS variable instead of the theme() function */
+    border-color: hsl(var(--border));
   }
   body {
     @apply bg-background text-foreground;
