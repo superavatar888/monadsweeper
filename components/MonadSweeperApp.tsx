@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { parseEther, createWalletClient, http, formatEther, type Address } from "viem"
+import { parseEther, createWalletClient, createPublicClient, http, formatEther, type Address } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -251,7 +251,7 @@ export default function MonadSweeperApp() {
               transport: http()
             })
             
-            // 获取余额
+            // 获取余额 - 使用 publicClient 或直接通过 RPC
             const balance = await walletClient.getBalance({ address: walletAccount.address })
             
             let transferAmount: bigint
