@@ -245,21 +245,29 @@ export default function MonadSweeperApp() {
           
           try {
             const walletAccount = privateKeyToAccount(account.privateKey as `0x${string}`)
+            
+            // 创建 public client 用于查询余额和 gas
+            const publicClient = createPublicClient({
+              chain: currentChain,
+              transport: http()
+            })
+            
+            // 创建 wallet client 用于发送交易
             const walletClient = createWalletClient({
               account: walletAccount,
               chain: currentChain,
               transport: http()
             })
             
-            // 获取余额 - 使用 publicClient 或直接通过 RPC
-            const balance = await walletClient.getBalance({ address: walletAccount.address })
+            // 获取余额
+            const balance = await publicClient.getBalance({ address: walletAccount.address })
             
             let transferAmount: bigint
             if (transferMode === "FIXED") {
               transferAmount = parseEther(account.amount || fixedAmount)
             } else {
               // 预估 gas 费用 (21000 gas * gas price)
-              const gasPrice = await walletClient.getGasPrice()
+              const gasPrice = await publicClient.getGasPrice()
               const estimatedGas = 21000n
               const gasCost = gasPrice * estimatedGas
               transferAmount = balance > gasCost ? balance - gasCost : 0n
@@ -318,19 +326,27 @@ export default function MonadSweeperApp() {
           
           try {
             const walletAccount = privateKeyToAccount(account.privateKey as `0x${string}`)
+            
+            // 创建 public client 用于查询
+            const publicClient = createPublicClient({
+              chain: currentChain,
+              transport: http()
+            })
+            
+            // 创建 wallet client 用于发送交易
             const walletClient = createWalletClient({
               account: walletAccount,
               chain: currentChain,
               transport: http()
             })
             
-            const balance = await walletClient.getBalance({ address: walletAccount.address })
+            const balance = await publicClient.getBalance({ address: walletAccount.address })
             
             let transferAmount: bigint
             if (transferMode === "FIXED") {
               transferAmount = parseEther(account.amount || fixedAmount)
             } else {
-              const gasPrice = await walletClient.getGasPrice()
+              const gasPrice = await publicClient.getGasPrice()
               const estimatedGas = 21000n
               const gasCost = gasPrice * estimatedGas
               transferAmount = balance > gasCost ? balance - gasCost : 0n
