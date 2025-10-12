@@ -4,7 +4,7 @@ import { useState } from "react"
 import { parseEther } from "viem"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { AlertTriangle, Loader2 } from "lucide-react"
+import { AlertTriangle, Loader2, ArrowRight } from "lucide-react"
 
 interface AccountData {
   privateKey: string
@@ -13,6 +13,13 @@ interface AccountData {
   valid: boolean
   error?: string
 }
+
+interface TargetMapping {
+  sourceIndex: number
+  targetAddress: string
+  amount: string
+}
+
 const parseInputLine = (line: string): { privateKey: string; amount?: string } => {
   const separators = [",", "="]
   let parts: string[] = []
@@ -42,14 +49,35 @@ const parseInputLine = (line: string): { privateKey: string; amount?: string } =
 }
 
 export default function MonadSweeperApp() {
+  // 归集模式：MANY_TO_ONE (多对一) 或 MANY_TO_MANY (多对多)
+  const [collectionMode, setCollectionMode] = useState<"MANY_TO_ONE" | "MANY_TO_MANY">("MANY_TO_ONE")
+  
+  // 多对一模式的状态
   const [targetAddress, setTargetAddress] = useState("")
+  
+  // 多对多模式的状态
+  const [targetAddresses, setTargetAddresses] = useState("")
+  const [parsedTargets, setParsedTargets] = useState<string[]>([])
+  
   const [rawKeyInput, setRawKeyInput] = useState("")
   const [transferMode, setTransferMode] = useState<"ALL" | "FIXED">("ALL")
   const [fixedAmount, setFixedAmount] = useState("0.05")
   const [parsedAccounts, setParsedAccounts] = useState<AccountData[]>([])
+  const [transferMappings, setTransferMappings] = useState<TargetMapping[]>([])
   const [status, setStatus] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+
+  const handleParseTargets = () => {
+    if (collectionMode === "MANY_TO_MANY") {
+      const lines = targetAddresses
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0 && line.startsWith("0x") && line.length === 42)
+      setParsedTargets(lines)
+      setStatus(`已解析 ${lines.length} 个目标地址`)
+    }
+  }
 
   const handleParseKeys = () => {
     setStatus("正在解析私钥...")
@@ -79,35 +107,72 @@ export default function MonadSweeperApp() {
       results.push({ privateKey: pk, address: valid ? "待查询..." : undefined, amount: lineAmount, valid, error })
     }
     setParsedAccounts(results)
-    setStatus(`已解析 ${results.length} 行，其中 ${results.filter((a) => a.valid).length} 个有效。`)
+    
+    // 如果是多对多模式，自动创建映射关系
+    if (collectionMode === "MANY_TO_MANY" && parsedTargets.length > 0) {
+      const validAccounts = results.filter(a => a.valid)
+      const mappings: TargetMapping[] = []
+      
+      for (let i = 0; i < validAccounts.length; i++) {
+        const targetIndex = i % parsedTargets.length // 循环使用目标地址
+        mappings.push({
+          sourceIndex: i,
+          targetAddress: parsedTargets[targetIndex],
+          amount: validAccounts[i].amount || (transferMode === "FIXED" ? fixedAmount : "全部")
+        })
+      }
+      setTransferMappings(mappings)
+      setStatus(`已解析 ${results.length} 行，其中 ${validAccounts.length} 个有效。已创建 ${mappings.length} 个转账映射。`)
+    } else {
+      setStatus(`已解析 ${results.length} 行，其中 ${results.filter((a) => a.valid).length} 个有效。`)
+    }
   }
 
   const handleSweep = async () => {
-    if (!targetAddress || targetAddress.length !== 42 || !targetAddress.startsWith("0x")) {
-      setStatus("错误：请输入有效的目标地址。")
-      return
+    if (collectionMode === "MANY_TO_ONE") {
+      if (!targetAddress || targetAddress.length !== 42 || !targetAddress.startsWith("0x")) {
+        setStatus("错误：请输入有效的目标地址。")
+        return
+      }
+    } else {
+      if (parsedTargets.length === 0) {
+        setStatus("错误：请先解析目标地址列表。")
+        return
+      }
+      if (transferMappings.length === 0) {
+        setStatus("错误：没有有效的转账映射关系。")
+        return
+      }
     }
+    
     const validAccounts = parsedAccounts.filter((a) => a.valid)
     if (validAccounts.length === 0) {
       setStatus("错误：没有有效的私钥可以归集。")
       return
     }
+    
     setIsProcessing(true)
     setIsSuccess(false)
-    setStatus(`正在归集 ${validAccounts.length} 个钱包...`)
+    
+    if (collectionMode === "MANY_TO_ONE") {
+      setStatus(`正在归集 ${validAccounts.length} 个钱包到单一地址...`)
+    } else {
+      setStatus(`正在执行 ${transferMappings.length} 笔一对一转账...`)
+    }
+    
     await new Promise((resolve) => setTimeout(resolve, 3000))
     setIsProcessing(false)
     setIsSuccess(true)
-    setStatus(`🎉 归集交易已发送！`)
+    setStatus(`🎉 ${collectionMode === "MANY_TO_ONE" ? "归集" : "一对一转账"}交易已发送！`)
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto p-6 bg-white rounded-2xl shadow-xl space-y-5">
+    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-xl space-y-5">
       <header className="text-center space-y-2">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
           MONAD 空投归集工具
         </h1>
-        <p className="text-sm text-gray-600">从多个空投钱包批量发送 MON 代币到交易所</p>
+        <p className="text-sm text-gray-600">支持多对一批量归集 & 多对多一对一转账</p>
       </header>
 
       <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
@@ -115,7 +180,37 @@ export default function MonadSweeperApp() {
         <p className="text-xs text-amber-800">警告：本工具涉及私钥操作，请务必在**离线/安全环境**中使用！</p>
       </div>
 
-      <div className="space-y-4">
+      {/* 归集模式选择 */}
+      <div className="space-y-3 pt-1 border-t border-gray-200">
+        <label className="text-sm font-medium text-gray-700">归集模式:</label>
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={() => setCollectionMode("MANY_TO_ONE")}
+            variant="outline"
+            className={`h-11 text-sm font-medium rounded-lg transition-all ${
+              collectionMode === "MANY_TO_ONE"
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-0 shadow-md hover:from-purple-700 hover:to-indigo-700"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            多对一归集 (批量到单一地址)
+          </Button>
+          <Button
+            onClick={() => setCollectionMode("MANY_TO_MANY")}
+            variant="outline"
+            className={`h-11 text-sm font-medium rounded-lg transition-all ${
+              collectionMode === "MANY_TO_MANY"
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-0 shadow-md hover:from-purple-700 hover:to-indigo-700"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            多对多转账 (一对一配对)
+          </Button>
+        </div>
+      </div>
+
+      {/* 多对一模式：单一目标地址 */}
+      {collectionMode === "MANY_TO_ONE" && (
         <div className="space-y-2">
           <label htmlFor="target-address" className="text-sm font-medium text-gray-700">
             目标交易所钱包 (归集地址):
@@ -129,21 +224,48 @@ export default function MonadSweeperApp() {
             className="h-10 text-sm font-mono border-gray-300 focus:border-blue-400 focus:ring-blue-400"
           />
         </div>
+      )}
+
+      {/* 多对多模式：多个目标地址 */}
+      {collectionMode === "MANY_TO_MANY" && (
         <div className="space-y-2">
-          <label htmlFor="private-keys" className="text-sm font-medium text-gray-700">
-            私钥列表 (每行一个):
+          <label htmlFor="target-addresses" className="text-sm font-medium text-gray-700">
+            目标地址列表 (每行一个地址，将按顺序一对一配对):
           </label>
           <textarea
-            id="private-keys"
-            value={rawKeyInput}
-            onChange={(e) => setRawKeyInput(e.target.value)}
-            rows={10}
+            id="target-addresses"
+            value={targetAddresses}
+            onChange={(e) => setTargetAddresses(e.target.value)}
+            rows={6}
             className="w-full p-3 border border-gray-300 rounded-lg text-xs font-mono placeholder:text-gray-400 bg-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition resize-none"
-            placeholder={`格式支持:\n私钥 金额 (例: 0x... 0.05)\n私钥,金额 (例: 0x...,0.05)\n或者仅私钥\n\n支持以下格式:\n私钥 金额 (例: 0x... 0.05)\n私钥,金额 (例: 0x...,0.05)\n私钥=金额 (例: 0x...=0.05)\n\n支持以下格式并自动解析，只需输入地址即可...`}
+            placeholder="0x1234...&#10;0x5678...&#10;0xabcd...&#10;&#10;每行一个地址，将按顺序与私钥配对&#10;如果私钥数量大于地址数量，将循环使用地址"
           />
+          <Button
+            onClick={handleParseTargets}
+            variant="outline"
+            className="w-full h-10 text-sm font-medium border-2 border-indigo-400 text-indigo-600 hover:bg-indigo-50 rounded-lg bg-white"
+          >
+            解析目标地址 ({parsedTargets.length} 个已解析)
+          </Button>
         </div>
+      )}
+
+      {/* 私钥输入区域 */}
+      <div className="space-y-2">
+        <label htmlFor="private-keys" className="text-sm font-medium text-gray-700">
+          私钥列表 (每行一个):
+        </label>
+        <textarea
+          id="private-keys"
+          value={rawKeyInput}
+          onChange={(e) => setRawKeyInput(e.target.value)}
+          rows={10}
+          className="w-full p-3 border border-gray-300 rounded-lg text-xs font-mono placeholder:text-gray-400 bg-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition resize-none"
+          placeholder={`格式支持:\n私钥 金额 (例: 0x... 0.05)\n私钥,金额 (例: 0x...,0.05)\n私钥=金额 (例: 0x...=0.05)\n或者仅私钥`}
+        />
       </div>
 
+      {/* 转账模式 */}
       <div className="space-y-3 pt-1">
         <label className="text-sm font-medium text-gray-700">转账模式:</label>
         <div className="grid grid-cols-2 gap-3">
@@ -163,11 +285,11 @@ export default function MonadSweeperApp() {
             variant="outline"
             className={`h-11 text-sm font-medium rounded-lg transition-all ${
               transferMode === "FIXED"
-                ? "bg-gray-100 text-gray-700 border-gray-300 shadow-sm"
+                ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white border-0 shadow-md hover:from-indigo-700 hover:to-blue-700"
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
           >
-            转账固定金额到指定地址
+            转账固定金额
           </Button>
         </div>
         {transferMode === "FIXED" && (
@@ -184,6 +306,7 @@ export default function MonadSweeperApp() {
         )}
       </div>
 
+      {/* 操作按钮 */}
       <div className="grid grid-cols-2 gap-3 pt-1">
         <Button
           onClick={handleParseKeys}
@@ -191,7 +314,7 @@ export default function MonadSweeperApp() {
           variant="outline"
           className="h-11 text-sm font-medium border-2 border-blue-400 text-blue-600 hover:bg-blue-50 rounded-lg bg-white"
         >
-          转账并检验私钥
+          解析并检验私钥
         </Button>
         <Button
           onClick={handleSweep}
@@ -200,16 +323,53 @@ export default function MonadSweeperApp() {
         >
           {isProcessing ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 正在归集
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 正在处理
             </>
           ) : (
-            "开始批量归集"
+            `开始${collectionMode === "MANY_TO_ONE" ? "批量归集" : "一对一转账"}`
           )}
         </Button>
       </div>
 
       {status && <div className="text-center text-sm font-medium text-gray-600 pt-2">{status}</div>}
-      {parsedAccounts.length > 0 && (
+
+      {/* 多对多模式的映射预览 */}
+      {collectionMode === "MANY_TO_MANY" && transferMappings.length > 0 && (
+        <div className="pt-4 border-t border-gray-200">
+          <h4 className="text-sm font-semibold text-gray-800 mb-3">转账映射关系预览</h4>
+          <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-lg">
+            <div className="space-y-2 p-3">
+              {transferMappings.map((mapping, index) => {
+                const account = parsedAccounts.filter(a => a.valid)[mapping.sourceIndex]
+                return (
+                  <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <div className="text-xs text-gray-500">源钱包 #{mapping.sourceIndex + 1}</div>
+                      <div className="font-mono text-xs text-gray-700 truncate">
+                        {account.privateKey.slice(0, 10)}...{account.privateKey.slice(-8)}
+                      </div>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-indigo-500 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="text-xs text-gray-500">目标地址</div>
+                      <div className="font-mono text-xs text-gray-700 truncate">
+                        {mapping.targetAddress.slice(0, 10)}...{mapping.targetAddress.slice(-8)}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-500">金额</div>
+                      <div className="font-semibold text-sm text-green-600">{mapping.amount}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 多对一模式的账户列表预览 */}
+      {collectionMode === "MANY_TO_ONE" && parsedAccounts.length > 0 && (
         <div className="pt-4 border-t border-gray-200">
           <h4 className="text-sm font-semibold text-gray-800 mb-3">解析结果预览</h4>
           <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg">
