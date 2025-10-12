@@ -2,39 +2,58 @@
 
 import React, { ReactNode } from "react";
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// 🚀 1. 根据官方信息更新 Monad 主网配置
-const monadChain = {
-  id: 143, // <-- 已更新为官方 ChainID
+// 🚀 Monad 测试网配置
+const monadTestnet = {
+  id: 10143,
+  name: "Monad Testnet",
+  nativeCurrency: { name: "MON", symbol: "MON", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["https://testnet-rpc.monad.xyz"] },
+    public: { http: ["https://testnet-rpc.monad.xyz"] },
+  },
+  blockExplorers: {
+    default: { name: "Monad Testnet Explorer", url: "https://testnet.monadexplorer.com" },
+  },
+  testnet: true,
+} as const;
+
+// 🎯 Monad 主网配置（待官方上线后启用）
+const monadMainnet = {
+  id: 143,
   name: "Monad Mainnet",
   nativeCurrency: { name: "MON", symbol: "MON", decimals: 18 },
   rpcUrls: {
-    // !! TODO: 官方 RPC 地址发布后，请务必在此处进行替换
     default: { http: ["https://rpc.monad.xyz"] },
     public: { http: ["https://rpc.monad.xyz"] },
   },
   blockExplorers: {
-    // !! TODO: 官方区块浏览器发布后，请在此处确认或替换
     default: { name: "Monadscan", url: "https://monadscan.io" },
   },
 } as const;
 
-const chains = [monadChain, mainnet, sepolia] as const;
+// 配置支持的链（测试网和主网）
+const chains = [monadTestnet, monadMainnet] as const;
 
-// 2. 创建 Wagmi 配置 (确保 transports 中的 ID 与 monadChain.id 匹配)
+// 创建 Wagmi 配置
 const config = createConfig({
   chains: chains,
   transports: {
-    [monadChain.id]: http(), // 这里会自动使用新的 ID: 143
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
+    [monadTestnet.id]: http("https://testnet-rpc.monad.xyz"),
+    [monadMainnet.id]: http("https://rpc.monad.xyz"),
   },
 });
 
-// 3. 创建 React Query 客户端
-const queryClient = new QueryClient();
+// 创建 React Query 客户端
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 interface Web3ProviderProps {
   children: ReactNode;
@@ -47,3 +66,6 @@ export default function Web3Provider({ children }: Web3ProviderProps) {
     </WagmiProvider>
   );
 }
+
+// 导出链配置供其他组件使用
+export { monadTestnet, monadMainnet };
