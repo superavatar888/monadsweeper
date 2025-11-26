@@ -7,6 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AlertTriangle, Loader2 } from "lucide-react"
 
+const RPC_ENDPOINTS = [
+  "https://rpc.monad.xyz",
+  "https://rpc1.monad.xyz",
+  "https://rpc3.monad.xyz",
+  "https://rpc-mainnet.monadinfra.com",
+]
+
 interface AccountData {
   privateKey: string
   address?: string
@@ -54,6 +61,33 @@ export default function MonadSweeperApp() {
   const [status, setStatus] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+
+  const fetchBalance = async (address: string): Promise<string> => {
+    for (const rpc of RPC_ENDPOINTS) {
+      try {
+        const response = await fetch(rpc, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "eth_getBalance",
+            params: [address, "latest"],
+            id: 1,
+          }),
+        })
+        const data = await response.json()
+        if (data.result) {
+          const balanceInWei = BigInt(data.result)
+          const balanceInMon = Number(balanceInWei) / 1e18
+          return balanceInMon.toFixed(6)
+        }
+      } catch (err) {
+        console.log(`[v0] RPC ${rpc} failed, trying next...`)
+        continue
+      }
+    }
+    return "获取失败"
+  }
 
   const handleParseKeys = async () => {
     setStatus("正在解析私钥...")
@@ -104,28 +138,7 @@ export default function MonadSweeperApp() {
 
     for (let i = 0; i < results.length; i++) {
       if (results[i].valid && results[i].address) {
-        try {
-          const response = await fetch(`https://rpc.monad.xyz`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              jsonrpc: "2.0",
-              method: "eth_getBalance",
-              params: [results[i].address, "latest"],
-              id: 1,
-            }),
-          })
-          const data = await response.json()
-          if (data.result) {
-            const balanceInWei = BigInt(data.result)
-            const balanceInMon = Number(balanceInWei) / 1e18
-            results[i].balance = balanceInMon.toFixed(6)
-          } else {
-            results[i].balance = "获取失败"
-          }
-        } catch (err) {
-          results[i].balance = "获取失败"
-        }
+        results[i].balance = await fetchBalance(results[i].address!)
         results[i].loadingBalance = false
         setParsedAccounts([...results])
       }
@@ -207,7 +220,7 @@ export default function MonadSweeperApp() {
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
           >
-            石墨烯布置器 (推荐)
+            归集所有余额 (推荐)
           </Button>
           <Button
             onClick={() => setTransferMode("FIXED")}
