@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { parseEther, privateKeyToAccount } from "viem"
+import { parseEther } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AlertTriangle, Loader2 } from "lucide-react"
