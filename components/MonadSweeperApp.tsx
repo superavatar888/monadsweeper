@@ -8,10 +8,12 @@ import { Input } from "@/components/ui/input"
 import { AlertTriangle, Loader2 } from "lucide-react"
 
 const RPC_ENDPOINTS = [
-  "https://rpc.monad.xyz",
-  "https://rpc1.monad.xyz",
   "https://rpc3.monad.xyz",
   "https://rpc-mainnet.monadinfra.com",
+  "https://rpc2.monad.xyz",
+  "https://rpc1.monad.xyz",
+  "https://rpc.monad.xyz",
+  "https://rpc4.monad.xyz",
 ]
 
 interface AccountData {
